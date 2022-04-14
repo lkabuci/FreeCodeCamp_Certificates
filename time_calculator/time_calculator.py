@@ -1,61 +1,60 @@
-import calendar
-from datetime import datetime
-  
-today_datetime = datetime.today() # 2022-04-13 18:14:34.796495
+from datetime import datetime as dt, timedelta
+# first weekdays date in 2000/01
+# I ised it as a refree
+# example first monday in 2000/01 the date was 2000/01/*3*
+DaysOfTheWeek = {
+    "Monday": 3, 
+    "Tuesday": 4,
+    "Wednesday": 5, 
+    "Thursday": 6, 
+    "Friday": 7, 
+    "Saturday": 1, 
+    "Sunday": 2
+}
 
 
-# 'datetime.date' object
-td_date = today_datetime.date() # 2022-04-13
-td_time = today_datetime.time() # 18:14:34.796495
-td_time_am_pm = today_datetime.strftime("%I:%M %p") # 06:37 PM
-
-
-year, month, day = [int(item) for item in str(td_date).split("-")] 
-
-
-date_as_string = " ".join(str(today_datetime.date()).split("-"))
-# 2022 04 13 <class 'str'>
-
-day_code = datetime.strptime(date_as_string, "%Y %m %d").weekday()
-weekday_as_string = calendar.day_name[day_code]
-# Wednesday <class 'str'>
-
-def add_time(start: str, duration:str, starting_day:str = None):
-    converteStartParam = str(datetime.strptime(start, "%I:%M %p").time())
-    starting = [int (item) for item in converteStartParam.split(":")[:2]] # [:2] ignore soconds
-
-    print(starting)
-    # 1900-01-01 19:35:00 <class 'datetime.datetime'>
-
-    during = [int(item) for item in duration.split(":")]
-    print(during)
+def add_time(start: str, period: str, start_from: str= "No"):
+    start_from = start_from.capitalize()
     
-    new_time = add_time_process(starting, during)
-    print(new_time)
-    return new_time
+    # used first of 2000 as a refree
+    current_year, current_month, current_day = 2000, 1, 1
+    in_dt = dt.strptime(start, "%I:%M %p").strftime("%H:%M").split(":")
+    user_hour, user_minute = [int(item) for item in in_dt]
 
+    hours_toBe_added, minutes_toBe_added = [int(item) for item in period.split(":")]
 
-def add_time_process(start: list, duration:list) -> list:
-
-    start_hour, start_minute = start
-    duration_hour, duration_minute = duration
-    
-    hours_added = start_hour + duration_hour
-    minutes_added = start_minute + duration_minute
-
-    is_minute_over_60 = minutes_added / 60
-    
-    if is_minute_over_60 < 1:
-        return [hours_added, minutes_added]
-    elif is_minute_over_60 == 1.0:
-        return [hours_added + 1, 0]
-    elif is_minute_over_60 > 1:
-        after_calculate_diff = [int(item) for item in str(round(is_minute_over_60, 2)).split(".")]
-        # [hour_after_calcule, minute_after_calcule]
-        # (158:60) + (19:13) -> (1, 22)
+    if start_from not in DaysOfTheWeek:
+        day_as_dt = dt(year=current_year, month=current_month, day=current_day, hour=user_hour, minute=user_minute)
+        time_after_added = day_as_dt + timedelta(hours=hours_toBe_added, minutes=minutes_toBe_added)
         
-        new_h, new_m = after_calculate_diff
-        return [hours_added + new_h , new_m]
-    
+    else:
+        starting_day_code = DaysOfTheWeek[start_from]
+        day_as_dt = dt(year=current_year, month=current_month, day=starting_day_code, hour=user_hour, minute=user_minute)
+        time_after_added = day_as_dt + timedelta(hours=hours_toBe_added, minutes=minutes_toBe_added)
 
-add_time("07:35 PM", "24:20")
+
+    nDays = time_after_added.date().day - day_as_dt.date().day
+    weekday_name = time_after_added.strftime("%A")
+    
+    goal_time = time_after_added.strftime("%I:%M %p")
+    
+    # check if the time contain a 0 at the begining
+    # if so remove it
+    if goal_time.split(":")[0][:1] == "0":
+        goal_time = goal_time[1:]
+
+    
+    if start_from in DaysOfTheWeek:
+        if nDays == 0:
+            return f"{goal_time}, {weekday_name}"
+        elif nDays == 1:
+            return f"{goal_time}, {weekday_name} (next day)"
+        else:
+            return f"{goal_time}, {weekday_name} ({nDays} days later)"
+    else:
+        if nDays == 0:
+            return f"{goal_time}"
+        if nDays == 1:
+            return f"{goal_time} (next day)"
+        else:
+            return f"{goal_time} ({nDays} days later)"
