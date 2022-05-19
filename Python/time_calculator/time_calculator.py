@@ -1,6 +1,6 @@
 from datetime import datetime as dt, timedelta
 # first weekdays date in 2000/01
-# I ised it as a refree
+# I used it as a refrence
 # example first monday in 2000/01 the date was 2000/01/*3*
 DaysOfTheWeek = {
     "Monday": 3, 
