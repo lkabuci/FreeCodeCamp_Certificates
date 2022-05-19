@@ -18,18 +18,18 @@ class Rectangle:
         self._height = value
 
     ############# get #############
-    
+
     def get_area(self):
-        return (self.width * self.height)
+        return self.width * self.height
 
     def get_perimeter(self):
         return 2 * self.width + 2 * self.height
 
     def get_diagonal(self):
-        return (self.width ** 2 + self.height ** 2) ** .5
+        return (self.width**2 + self.height**2) ** 0.5
 
     def get_picture(self):
-        picture = ''
+        picture = ""
         if self.height >= 50 or self.width >= 50:
             return "Too big for picture."
         else:
@@ -60,17 +60,16 @@ class Square(Rectangle):
     def set_side(self, value):
         super(Square, self).__init__(width=value, height=value)
         self._side = value
-    
+
     def set_width(self, value):
         super(Square, self).__init__(width=value, height=value)
         self._side = value
-    
+
     def set_height(self, value):
         super(Square, self).__init__(width=value, height=value)
         self._side = value
 
     def __repr__(self):
         return f"{__class__.__name__}(side={self.side})"
-    
+
     side = property(get_side, set_side)
-        

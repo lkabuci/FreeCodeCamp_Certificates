@@ -16,14 +16,18 @@ class Category:
             return False
 
     def get_balance(self):
-        values = [key['amount'] for key in self.ledger]
+        values = [key["amount"] for key in self.ledger]
         balance = sum([float(value) for value in values])
         return balance
 
     def transfer(self, amount: float, another_category):
         if self.check_funds(amount):
-            self.withdraw(amount, description=f"Transfer to {another_category._category}")
-            another_category.deposit(amount, description=f"Transfer from {self._category}")
+            self.withdraw(
+                amount, description=f"Transfer to {another_category._category}"
+            )
+            another_category.deposit(
+                amount, description=f"Transfer from {self._category}"
+            )
             return True
         else:
             return False
@@ -36,16 +40,16 @@ class Category:
         amounts, descriptions, rows = [], [], []
         for item in self.ledger:
             # amounts.append(str(round(item['amount'], 2))[:7])
-            str(item['amount'])
+            str(item["amount"])
             # amounts.append(str(item['amount'])[:7])
-            amount = item['amount']
+            amount = item["amount"]
             amounts.append("{:4.2f}".format(amount))
-            descriptions.append(item['description'][:23])
+            descriptions.append(item["description"][:23])
 
         for item in list(zip(descriptions, amounts)):
             rows.append(list(item))
 
-        string = f'{self._category:*^30}\n'
+        string = f"{self._category:*^30}\n"
         for row in rows:
             spaces_in_description = 23 - len(row[0])
             row[0] = f"{row[0]}{spaces_in_description * ' '}"
@@ -55,7 +59,7 @@ class Category:
 
             string += f"{row[0]}{row[1]:>5}\n"
 
-        string += f'Total: {self.get_balance()}'
+        string += f"Total: {self.get_balance()}"
         return string
 
 
@@ -65,7 +69,9 @@ def create_spend_chart(categories: list):
     for category in categories:
         total_spent += category.spent[0]
         category_names.append(category._category)
-    percentage_before = [round((category.spent[0]/total_spent)*100) for category in categories]
+    percentage_before = [
+        round((category.spent[0] / total_spent) * 100) for category in categories
+    ]
 
     ten_multiplicity = [number * 10 for number in range(11)]
     percentages = []
@@ -79,7 +85,7 @@ def create_spend_chart(categories: list):
 
             elif big_difference > (num - ten_idx):
                 the_closest = ten_idx
-                big_difference = (num - ten_idx)
+                big_difference = num - ten_idx
 
         percentages.append(the_closest + 10)
         # added 10 here to make it match with tha chart bar
@@ -96,7 +102,7 @@ def create_spend_chart(categories: list):
 
     o_completed.insert(0, percentages_bar)
 
-    string = 'Percentage spent by category\n'
+    string = "Percentage spent by category\n"
     for idx in range(11):
         for itm in o_completed:
             if "|" in itm[idx]:
